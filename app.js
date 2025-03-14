@@ -32,8 +32,9 @@ auth.onAuthStateChanged((user) => {
     // Load school orders data
     loadOrderData();
   } else {
-    // No user is signed in, redirect to login page
-    window.location.href = "login.html";
+    // Comment out the redirect
+    // window.location.href = "login.html";
+    console.log("No user signed in");
   }
 });
 

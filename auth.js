@@ -1,4 +1,4 @@
-// Firebase configuration - Replace with your actual Firebase config
+
 // Make sure this matches the configuration in app.js
 const firebaseConfig = {
     apiKey: "AIzaSyD-8VGroIJfCoN3gzXg_jYJpJsq4hOngSI",
@@ -18,13 +18,14 @@ const firebaseConfig = {
   const errorMessage = document.getElementById('error-message');
   const registerLink = document.getElementById('register-link');
   
-  // Check if user is already logged in
-  auth.onAuthStateChanged((user) => {
-    if (user) {
-      // User is already signed in, redirect to main page
-      window.location.href = "index.html";
-    }
-  });
+// Check if user is already logged in
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    // Comment out the redirect
+    // window.location.href = "index.html";
+    console.log("User is logged in:", user.email);
+  }
+});
   
   // Handle login
   loginForm.addEventListener('submit', (e) => {
