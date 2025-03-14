@@ -146,7 +146,6 @@ logoutBtn.addEventListener('click', () => {
   });
 });
 
-// Function to show new order form modal
 function showNewOrderForm() {
   // First, get the current highest slNo
   db.collection("schoolOrders")
@@ -291,11 +290,139 @@ function showNewOrderForm() {
       });
     })
     .catch((error) => {
-      console.error("Error getting highest slNo:", error);
-      // Fallback if we can't get the highest slNo
-      // ...show modal with empty slNo field
+      console.warn("Error getting highest slNo, defaulting to 1:", error);
+      
+      // Create modal with default slNo of 1
+      const modalHTML = `
+      <div class="modal">
+        <div class="modal-content">
+          <span class="close">&times;</span>
+          <h2>New School Order</h2>
+          <form id="orderForm">
+            <div class="form-group">
+              <label for="slNo">SL. No</label>
+              <input type="number" id="slNo" value="1" readonly>
+            </div>
+            <div class="form-group">
+              <label for="mouNo">Order No</label>
+              <input type="number" id="mouNo" required>
+            </div>
+            <div class="form-group">
+              <label for="schoolName">School Name</label>
+              <input type="text" id="schoolName" required>
+            </div>
+            <div class="form-group">
+              <label for="place">Place</label>
+              <input type="text" id="place" required>
+            </div>
+            <div class="form-group">
+              <label for="classes">Classes</label>
+              <select id="classes" required>
+                <option value="">Select Class</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+                <option value="6">6</option>
+                <option value="7">7</option>
+                <option value="8">8</option>
+                <option value="9">9</option>
+                <option value="10">10</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="programType">Program Type</label>
+              <select id="programType" required>
+                <option value="">Select Program Type</option>
+                <option value="Aspirants">Aspirants</option>
+                <option value="Scholars">Scholars</option>
+                <option value="Olympiad">Olympiad</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="orders">Quantity</label>
+              <input type="number" id="orders" onchange="calculateAmount()">
+            </div>
+            <div class="form-group">
+              <label for="rate">Rate</label>
+              <input type="number" id="rate" onchange="calculateAmount()">
+            </div>
+            <div class="form-group">
+              <label for="amount">Amount</label>
+              <input type="number" id="amount" readonly>
+            </div>
+            <div class="form-group">
+              <label for="remarks">Remarks</label>
+              <input type="text" id="remarks">
+            </div>
+            <div class="form-group">
+              <label for="orderSource">Order Source</label>
+              <select id="orderSource" required>
+                <option value="">Select Order Source</option>
+                <option value="DIRECT">DIRECT</option>
+                <option value="DISTRIBUTOR">DISTRIBUTOR</option>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Save Order</button>
+          </form>
+        </div>
+      </div>
+      `;
+      
+      // Add modal to page
+      modalContainer.innerHTML = modalHTML;
+      
+      // Get modal elements
+      const modal = modalContainer.querySelector('.modal');
+      const closeBtn = modalContainer.querySelector('.close');
+      const form = modalContainer.querySelector('#orderForm');
+      
+      // Close button handler
+      closeBtn.addEventListener('click', () => {
+        modalContainer.innerHTML = '';
+      });
+      
+      // Add calculate amount function to window
+      window.calculateAmount = function() {
+        const quantity = document.getElementById('orders').value || 0;
+        const rate = document.getElementById('rate').value || 0;
+        const amount = quantity * rate;
+        document.getElementById('amount').value = amount;
+      };
+      
+      // Form submit handler
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const newOrderData = {
+          slNo: document.getElementById('slNo').value,
+          mouNo: document.getElementById('mouNo').value,
+          schoolName: document.getElementById('schoolName').value,
+          place: document.getElementById('place').value,
+          classes: document.getElementById('classes').value,
+          programType: document.getElementById('programType').value,
+          orders: document.getElementById('orders').value,
+          rate: document.getElementById('rate').value,
+          amount: document.getElementById('amount').value,
+          remarks: document.getElementById('remarks').value,
+          orderSource: document.getElementById('orderSource').value,
+          timestamp: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        try {
+          await db.collection("schoolOrders").add(newOrderData);
+          console.log("Document successfully added!");
+          modalContainer.innerHTML = '';
+          loadOrderData(); // Reload the data
+        } catch (error) {
+          console.error("Error adding document: ", error);
+          alert("Error adding order: " + error.message);
+        }
+      });
     });
 }
+
 
 // Function to show edit dialog
 async function showEditDialog(orderId) {
