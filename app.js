@@ -13,6 +13,22 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
+// Add this debugging code here
+console.log("Firebase initialized with project:", firebaseConfig.projectId);
+console.log("Current auth state at init:", auth.currentUser ? "Logged in" : "Not logged in");
+
+// Test Firestore permissions
+db.collection('test').doc('test').set({
+  test: 'Testing write permissions',
+  timestamp: firebase.firestore.FieldValue.serverTimestamp()
+})
+.then(() => {
+  console.log('Write test successful - you have write permissions!');
+})
+.catch(error => {
+  console.error('Write test failed:', error);
+});
+
 // DOM elements
 const ordersTableBody = document.getElementById('orders-table-body');
 const totalAmountElement = document.getElementById('total-amount');
@@ -62,6 +78,7 @@ async function loadOrderData() {
     ordersTableBody.innerHTML = `<tr><td colspan="11">Error loading data: ${error.message}</td></tr>`;
   }
 }
+
 
 // Display orders in the table
 function displayOrderData(ordersArray) {
