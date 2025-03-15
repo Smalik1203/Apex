@@ -49,7 +49,7 @@ auth.onAuthStateChanged((user) => {
     loadOrderData();
   } else {
     // Comment out the redirect
-    // window.location.href = "login.html";
+    window.location.href = "login.html";
     console.log("No user signed in");
   }
 });
