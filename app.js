@@ -1,4 +1,4 @@
-// Firebase configuration - Replace with your actual Firebase config
+// Firebase configuration - MUST MATCH auth.js exactly
 const firebaseConfig = {
   apiKey: "AIzaS_D-8VGroIJfCoN3gzXg_jYJpJsq4hOngST",
   authDomain: "apex-4a26a.firebaseapp.com",
@@ -13,22 +13,6 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.firestore();
 const auth = firebase.auth();
 
-// Add this debugging code here
-console.log("Firebase initialized with project:", firebaseConfig.projectId);
-console.log("Current auth state at init:", auth.currentUser ? "Logged in" : "Not logged in");
-
-// Test Firestore permissions
-db.collection('test').doc('test').set({
-  test: 'Testing write permissions',
-  timestamp: firebase.firestore.FieldValue.serverTimestamp()
-})
-.then(() => {
-  console.log('Write test successful - you have write permissions!');
-})
-.catch(error => {
-  console.error('Write test failed:', error);
-});
-
 // DOM elements
 const ordersTableBody = document.getElementById('orders-table-body');
 const totalAmountElement = document.getElementById('total-amount');
@@ -40,6 +24,8 @@ const modalContainer = document.getElementById('modal-container');
 
 // Check authentication state
 auth.onAuthStateChanged((user) => {
+  console.log("Auth state check on main page:", user ? "Logged in" : "Not logged in");
+  
   if (user) {
     // User is signed in
     console.log("User is signed in:", user.email);
@@ -48,9 +34,9 @@ auth.onAuthStateChanged((user) => {
     // Load school orders data
     loadOrderData();
   } else {
-    // Comment out the redirect
-    window.location.href = "login.html";
-    console.log("No user signed in");
+    // No user is signed in, redirect to login page
+    console.log("No user signed in, redirecting to login page");
+    window.location.replace("login.html");
   }
 });
 
