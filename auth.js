@@ -1,15 +1,15 @@
 
 // Make sure this matches the configuration in app.js
 const firebaseConfig = {
-    apiKey: "AIzaSyD-8VGroIJfCoN3gzXg_jYJpJsq4hOngSI",
-    authDomain: "apex-4a26a.firebaseapp.com",
-    projectId: "apex-4a26a",
-    storageBucket: "apex-4a26a.firebasestorage.app",
-    messagingSenderId: "163808101285",
-    appId: "1:163808101285:web:b5738d69204e0f141a1e4c",
-  };
+  apiKey: "AIzaS_D-8VGroIJfCoN3gzXg_jYJpJsq4hOngST", // Update to match app.js
+  authDomain: "apex-4a26a.firebaseapp.com",
+  projectId: "apex-4a26a",
+  storageBucket: "apex-4a26a.firestorage.app", // Update to match app.js
+  messagingSenderId: "163808101285",
+  appId: "1:163808101285:web:b5738d69204e0f141a1e4c",
+};
   
-  // Initialize Firebase
+// Initialize Firebase
   firebase.initializeApp(firebaseConfig);
   const auth = firebase.auth();
   
@@ -21,8 +21,8 @@ const firebaseConfig = {
 // Check if user is already logged in
 auth.onAuthStateChanged((user) => {
   if (user) {
-    // Comment out the redirect
-    // window.location.href = "index.html";
+    // Uncomment this redirect
+    window.location.href = "index.html";
     console.log("User is logged in:", user.email);
   }
 });
