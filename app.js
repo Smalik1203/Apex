@@ -1,11 +1,12 @@
 // Firebase configuration - MUST MATCH auth.js exactly
 const firebaseConfig = {
-  apiKey: "AIzaS_D-8VGroIJfCoN3gzXg_jYJpJsq4hOngST",
+  apiKey: "AIzaSyD-8VGroIJfCoN3gzXg_jYJpJsq4hOngSI",
   authDomain: "apex-4a26a.firebaseapp.com",
   projectId: "apex-4a26a",
-  storageBucket: "apex-4a26a.firestorage.app",
+  storageBucket: "apex-4a26a.firebasestorage.app",
   messagingSenderId: "163808101285",
-  appId: "1:163808101285:web:b5738d69204e0f141a1e4c"
+  appId: "1:163808101285:web:b5738d69204e0f141a1e4c",
+  measurementId: "G-0EFGN5FSV5"
 };
 
 // Initialize Firebase
