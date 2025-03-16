@@ -107,7 +107,6 @@ function displayOrderData(ordersArray) {
       <td>${order.mouNo || ''}</td>
       <td class="school-name-cell" data-id="${order.id}">${order.schoolName || ''}</td>
       <td>${order.place || ''}</td>
-      <td>${classesDisplay}</td>
       <td>${programTypesDisplay}</td>
       <td>${quantityDisplay}</td>
       <td>${order.rate || ''}</td>
