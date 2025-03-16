@@ -123,6 +123,12 @@ function displayOrderData(ordersArray) {
       const orderId = this.getAttribute('data-id');
       showEditDialog(orderId);
     });
+
+  // Export button click handler
+  document.getElementById('export-btn').addEventListener('click', () => {
+  exportToCSV();
+  });
+  
     // Add styling to make it look clickable
     cell.style.cursor = 'pointer';
     cell.style.color = 'var(--primary-color)';
@@ -816,4 +822,104 @@ async function showEditDialog(orderId) {
     console.error("Error getting document:", error);
     alert("Error loading order: " + error.message);
   }
+}
+
+// Function to export order data to CSV
+function exportToCSV() {
+  // Show loading indicator
+  const loadingIndicator = document.createElement('div');
+  loadingIndicator.className = 'loading-indicator';
+  loadingIndicator.innerHTML = '<div class="loading-spinner"></div>';
+  document.body.appendChild(loadingIndicator);
+
+  // First, get all current order data
+  db.collection('schoolOrders')
+    .orderBy('slNo', 'asc')
+    .get()
+    .then((querySnapshot) => {
+      const orders = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      
+      if (orders.length === 0) {
+        alert('No data to export');
+        document.body.removeChild(loadingIndicator);
+        return;
+      }
+      
+      // Create CSV header row
+      let csvContent = 'SL.NO,ORDER NO,SCHOOL NAME,PLACE,PROGRAM TYPE,QUANTITY,RATE,AMOUNT,REMARKS,ORDER SOURCE,CLASS DETAILS\n';
+      
+      // Add data rows
+      orders.forEach(order => {
+        // Process the class details for better export format
+        let classDetails = '';
+        if (order.classDetails && Array.isArray(order.classDetails)) {
+          classDetails = order.classDetails.map(item => 
+            `Class ${item.class}: ${item.programType} (${item.quantity} @ ₹${item.rate} = ₹${item.subtotal})`
+          ).join('; ');
+        }
+        
+        // Basic order info
+        const programTypes = order.classDetails && Array.isArray(order.classDetails) ? 
+          [...new Set(order.classDetails.map(item => item.programType))].join(', ') : 
+          (order.programType || '');
+          
+        const totalQuantity = order.classDetails && Array.isArray(order.classDetails) ?
+          order.classDetails.reduce((sum, item) => sum + parseInt(item.quantity || 0), 0) :
+          (order.orders || '');
+          
+        const totalAmount = order.totalAmount || order.amount || '';
+        
+        // Make sure text fields are properly escaped for CSV
+        const escapeCsvField = (field) => {
+          if (field === null || field === undefined) return '';
+          const str = String(field);
+          // If the field contains commas, quotes, or newlines, enclose it in quotes
+          if (str.includes(',') || str.includes('"') || str.includes('\n')) {
+            return `"${str.replace(/"/g, '""')}"`;
+          }
+          return str;
+        };
+        
+        // Create the CSV row
+        const row = [
+          order.slNo || '',
+          order.mouNo || '',
+          escapeCsvField(order.schoolName || ''),
+          escapeCsvField(order.place || ''),
+          escapeCsvField(programTypes),
+          totalQuantity,
+          order.rate || '',
+          totalAmount,
+          escapeCsvField(order.remarks || ''),
+          order.orderSource || order.distributor || '',
+          escapeCsvField(classDetails)
+        ].join(',');
+        
+        csvContent += row + '\n';
+      });
+      
+      // Create and trigger download
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.setAttribute('href', url);
+      link.setAttribute('download', `apex-edutech-orders-${new Date().toISOString().split('T')[0]}.csv`);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      // Remove loading indicator
+      document.body.removeChild(loadingIndicator);
+    })
+    .catch(error => {
+      console.error('Error exporting data:', error);
+      alert('Error exporting data: ' + error.message);
+      
+      // Remove loading indicator even if there's an error
+      document.body.removeChild(loadingIndicator);
+    });
 }
